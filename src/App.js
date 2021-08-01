@@ -13,31 +13,9 @@ import GithubState from "./context/github/GithubState";
 import "./App.css";
 
 const App = () => {
-  const [users, setUsers] = useState([]);
-  const [user, setUser] = useState({});
   const [repos, setRepos] = useState([]);
   const [loading, setLoading] = useState(false);
   const [alert, setAlert] = useState(null);
-
-  // Search github users
-  const searchUsers = async (text) => {
-    // console.log("env", process.env.REACT_APP_GITHUB_CLIENT_ID);
-    setLoading(true);
-    const res = await axios.get(
-      `https://api.github.com/search/users?q=${text}`
-    );
-    setUsers(res.data.items);
-    setLoading(false);
-  };
-
-  // Get public profile information for github user
-  const getUser = async (username) => {
-    setLoading(true);
-
-    const res = await axios.get(`https://api.github.com/users/${username}`);
-    setUser(res.data);
-    setLoading(false);
-  };
 
   // Get user repos
   const getUserRepos = async (username) => {
@@ -47,12 +25,6 @@ const App = () => {
       `https://api.github.com/users/${username}/repos?per_page=5&sort=created:asc`
     );
     setRepos(res.data);
-    setLoading(false);
-  };
-
-  // Clear users from state
-  const clearUsers = () => {
-    setUsers([]);
     setLoading(false);
   };
 
@@ -76,13 +48,8 @@ const App = () => {
                 path='/'
                 render={(props) => (
                   <Fragment>
-                    <Search
-                      searchUsers={searchUsers}
-                      clearUsers={clearUsers}
-                      showClear={users.length > 0 ? true : false}
-                      setAlert={showAlert}
-                    />
-                    <Users loading={loading} users={users} />
+                    <Search setAlert={showAlert} />
+                    <Users />
                   </Fragment>
                 )}
               />
@@ -93,9 +60,7 @@ const App = () => {
                 render={(props) => (
                   <User
                     {...props}
-                    getUser={getUser}
                     getUserRepos={getUserRepos}
-                    user={user}
                     repos={repos}
                     loading={loading}
                   />
